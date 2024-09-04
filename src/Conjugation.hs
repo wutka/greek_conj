@@ -5,10 +5,15 @@ import Utils
 import Data.Maybe (fromJust)
 
 data PartsType = Root String | ConnectingVowel Char | PersonalEnding String
+  deriving (Show, Eq)
 data ModificationType = LengthenForNoPersonalEnding | MovableNu | DropNInONS
+  deriving (Show, Eq)
 data ModifyType = Modify ModificationType String
+  deriving (Show, Eq)
 data ConjugationType = Conjugation [PartsType] String [ModifyType]
+  deriving (Show, Eq)
 data VerbLemmaType = WVerb VerbType | MIVerb VerbType | DeponentVerb VerbType | UnknownVerb VerbType
+  deriving (Show, Eq)
 
 type ModificationFunc = VerbType -> ConjugationType -> String -> Maybe (ConjugationType, String)
 
@@ -79,7 +84,7 @@ runModificationChain fullChain (nextMod : restMods) verb conjugation currentForm
       runModificationChain fullChain fullChain verb newConjugation newCurrentForm
     
 doModifications :: VerbType -> ConjugationType -> (ConjugationType, String)
-doModifications verb conj@(Conjugation _ initialForm _) currentForm =
+doModifications verb conj@(Conjugation _ initialForm _) =
   runModificationChain modificationChain modificationChain verb conj initialForm
 
 
@@ -95,9 +100,9 @@ primaryActiveEnding :: Person -> Number -> String
 primaryActiveEnding First Singular = "-"
 primaryActiveEnding Second Singular = "IS"
 primaryActiveEnding Third Singular = "I"
-primaryActiveEnding First Plural = "OMEN"
+primaryActiveEnding First Plural = "MEN"
 primaryActiveEnding Second Plural = "TE"
-primaryActiveEnding Third Plural = "ONSI(N)"
+primaryActiveEnding Third Plural = "NSI(N)"
 
 wStem :: String -> String
 wStem lemma = trunc 1 lemma
@@ -126,7 +131,15 @@ conjugate verb =
     DeponentVerb _ -> Nothing
     UnknownVerb _ -> Nothing
   
-  
+runConjugation :: VerbType -> Maybe (ConjugationType, String)
+runConjugation verb =
+  case conjugate verb of
+    Nothing -> Nothing
+    Just conjugation ->
+      case doModifications verb conjugation of
+        (finalConj, finalForm) ->
+          Just (finalConj, checkConjugation verb finalForm)
+    
   
 
 
