@@ -2,14 +2,14 @@ module Main where
 
 import Parsing
 import Conjugation
+import Data.Maybe (mapMaybe)
 
-showConjugation :: Maybe (ConjugationType, String) -> String
-showConjugation Nothing = ""
-showConjugation (Just (conj, finalForm)) =
+showConjugation :: (ConjugationType, String) -> String
+showConjugation (conj, finalForm) =
   (show conj) ++ "  final: " ++ finalForm
   
 main :: IO ()
 main = do
   verbs <- loadVerbFile "beta_conj.txt"
-  putStrLn $ unlines (map showConjugation (map runConjugation verbs))
+  putStrLn $ unlines (map showConjugation (mapMaybe runConjugation verbs))
   

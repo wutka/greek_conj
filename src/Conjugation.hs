@@ -63,7 +63,7 @@ modMovableNuEnding (Verb _ _ conjugated) (Conjugation parts initial mods) curren
 
 modONS :: VerbType -> ConjugationType -> String -> Maybe (ConjugationType, String)
 modONS _ (Conjugation parts initial mods) currentForm =
-  case findSubstr "NSI" currentForm of
+  case findSubstr "ONS" currentForm of
     Nothing -> Nothing
     Just (before, after) -> Just (Conjugation parts initial
                                   (mods ++ [Modify DropNInONS (newMod before after)]),
